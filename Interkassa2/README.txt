@@ -1,5 +1,6 @@
-Модуль предназначен для CMS Simpla 2.3.7
-
+Модуль разработан в компании GateOn предназначен для CMS Simpla 2.3.7
+Сайт разработчикa: www.gateon.net
+E-mail: www@smartbyte.pro
 
 
 Установка модуля:

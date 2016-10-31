@@ -49,7 +49,7 @@ class Interkassa2 extends Simpla
 		$button = "<form name='payment' method='post' action='https://sci.interkassa.com/' accept-charset='UTF-8'> 
 		<input type='hidden' name='ik_co_id' value='".$settings['ik_co_id']."'>
 		<input type='hidden' name='ik_pm_no' value='".$order->id."'>
-		<input type='hidden' name='ik_cur'   value='".$currency."'>
+		<input type='hidden' name='ik_cur'   value='".$payment_currency->code."'>
 		<input type='hidden' name='ik_am'    value='$price'>
 		<input type='hidden' name='ik_desc'  value='$desc'>
 		<input type='hidden' name='ik_suc_u'  value='$success_url'>
