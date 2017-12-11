@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+	<name>Интеркасса</name>
+	<settings>
+		<variable>ik_merchant_id</variable>
+		<name>Идентификатор кассы</name>
+	</settings>
+	<settings>
+		<variable>ik_secret_key</variable>
+		<name>Секретный ключ кассы</name>
+	</settings>
+	<settings>
+		<variable>ik_test_key</variable>
+		<name>Тестовый ключ кассы</name>
+	</settings>
+	<settings>
+		<variable>ik_api_id</variable>
+		<name>Интеркасса API ID</name>
+	</settings>
+	<settings>
+		<variable>ik_api_key</variable>
+		<name>Интеркасса API KEY</name>
+	</settings>
+	<settings>
+		<variable>ik_testmode</variable>
+		<name>Тестовый режим</name>
+		<options>
+			<name>Тестовый</name>
+			<value>1</value>
+		</options>
+	</settings>
+</module>
