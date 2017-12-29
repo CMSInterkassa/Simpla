@@ -66,6 +66,8 @@ class Interkassa extends Simpla
 		unset($params["secret"]);
 		$params["ik_sign"] = $signature;
 
+		$paysys = $this->getIkPaymentSystems($cfg['ik_merchant_id'],$cfg['ik_api_id'],$cfg['ik_api_key']);
+
 		$html .= '
 			<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -79,54 +81,58 @@ class Interkassa extends Simpla
 			<div class="ik_block">
 				<form action="'.$action_url.'" method="POST" name="vm_interkassa_form" id="ikform">';
 		foreach($params as $k=>$v) $html .= '<input type="hidden" name="'.$k.'" value="'.$v.'">';
+
 		$html.='
 				</form>
 				<button onclick="document.forms.vm_interkassa_form.submit()" class="btn btn-primary" style="display:none">Подтвердить</button>
-				<img src="'.$uri.'assets/ik_logo.png" width="50%"><br>
-				<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target=".ik_modal">Выбрать платежную систему</button>
-				<div class="modal fade ik_modal" tabindex="-1" role="dialog">
-					<div class="modal-dialog modal-lg" role="document">
-						<div class="" id="plans">
-							<div class="modal-body">
-								<h1>1. Выберите удобный способ оплаты<br>2. Укажите валюту<br>3. Нажмите \'Оплатить\'</h1>
-								<div class="row">';
-		foreach($this->getIkPaymentSystems($cfg['ik_merchant_id'],$cfg['ik_api_id'],$cfg['ik_api_key']) as $ps=>$info){
-			$tnp = '';
+				<img src="'.$uri.'assets/ik_logo.png" width="50%"><br>';
+		if(is_array($paysys) && !empty($paysys)){
+			$html.='
+					<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target=".ik_modal">Выбрать платежную систему</button>
+					<div class="modal fade ik_modal" tabindex="-1" role="dialog">
+						<div class="modal-dialog modal-lg" role="document">
+							<div class="" id="plans">
+								<div class="modal-body">
+									<h1>1. Выберите удобный способ оплаты<br>2. Укажите валюту<br>3. Нажмите \'Оплатить\'</h1>
+									<div class="row">';
+			foreach($paysys as $ps=>$info){
+				$tnp = '';
 
-			$tnp .= '
-									<div class="col-sm-3 text-center payment_system">
-										<div class="panel panel-warning panel-pricing">
-											<div class="panel-heading">
-												<img src="'.$uri.'assets/paysystems/'.$ps.'.png" alt="'.$info['title'].'">
+				$tnp .= '
+										<div class="col-sm-3 text-center payment_system">
+											<div class="panel panel-warning panel-pricing">
+												<div class="panel-heading">
+													<img src="'.$uri.'assets/paysystems/'.$ps.'.png" alt="'.$info['title'].'">
+												</div>
+												<div class="form-group">
+												<div class="input-group">
+													<div id="radioBtn" class="btn-group radioBtn">';
+				foreach ($info['currency'] as $currency => $currencyAlias)
+					$tnp .= '<a class="btn btn-primary btn-sm '.($currency==$shop_cur?'active':'notActive').'" data-toggle="fun" data-title="'.$currencyAlias.'">'.$currency.'</a>';
+				$tnp .= '</div>
+													<input type="hidden" name="fun" id="fun">
+												</div>
 											</div>
-											<div class="form-group">
-											<div class="input-group">
-												<div id="radioBtn" class="btn-group radioBtn">';
-			foreach ($info['currency'] as $currency => $currencyAlias)
-				$tnp .= '<a class="btn btn-primary btn-sm '.($currency==$shop_cur?'active':'notActive').'" data-toggle="fun" data-title="'.$currencyAlias.'">'.$currency.'</a>';
-			$tnp .= '</div>
-												<input type="hidden" name="fun" id="fun">
+											<div class="panel-footer">
+												<a class="btn btn-block btn-success ik-payment-confirmation" data-title="'.$ps.'" href="#">Оплатить с
+													<br>
+													<strong>'.$info['title'].'</strong>
+												</a>
 											</div>
 										</div>
-										<div class="panel-footer">
-											<a class="btn btn-block btn-success ik-payment-confirmation" data-title="'.$ps.'" href="#">Оплатить с
-												<br>
-												<strong>'.$info['title'].'</strong>
-											</a>
-										</div>
+									</div>';
+				if($ps=='test'&&!$cfg['ik_testmode']) $tnp = '';
+				$html.=$tnp;
+			}
+
+			$html .= '
 									</div>
-								</div>';
-			if($ps=='test'&&!$cfg['ik_testmode']) $tnp = '';
-			$html.=$tnp;
-}
-
-		$html .= '
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</div>';
+				</div>';
+			}
 		return $html;
 	}
 	private function getIkPaymentSystems($ik_co_id, $ik_api_id, $ik_api_key){
