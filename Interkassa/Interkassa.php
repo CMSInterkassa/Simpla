@@ -133,6 +133,7 @@ class Interkassa extends Simpla
 					</div>
 				</div>';
 			}
+			else $html.= $paysys; // '<button onclick="document.forms.vm_interkassa_form.submit()" class="btn btn-primary">Подтвердить</button>'
 		return $html;
 	}
 	private function getIkPaymentSystems($ik_co_id, $ik_api_id, $ik_api_key){
