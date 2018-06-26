@@ -9,6 +9,9 @@ class Interkassa extends Simpla
 		$payment_currency = $this->money->get_currency(intval($payment_method->currency_id));
 		$cfg = $this->payment->get_payment_settings($payment_method->id);
 		$uri = $this->config->root_url.'/payment/Interkassa/';
+		if (!isset($_SESSION)) {
+			session_start();
+		}
 		$_SESSION['secret_key'] = $cfg['ik_secret_key'];
 
 		$price = round($this->money->convert($order->total_price, $payment_method->currency_id, false), 2);

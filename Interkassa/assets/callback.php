@@ -3,7 +3,12 @@ if($_SERVER['REQUEST_METHOD']!='POST') die();
 
 function IkSignFormation($data){
   if (!empty($data['ik_sign'])) unset($data['ik_sign']);
-  $secret_key = $_SESSION['secret_key'];
+  if (!isset($_SESSION)) {
+    session_start();
+  }
+  if (isset( $_SESSION['secret_key'])) {
+    $secret_key = $_SESSION['secret_key'];
+  }
 
   $dataSet = array();
   foreach ($data as $key => $value) {

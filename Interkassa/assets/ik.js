@@ -123,7 +123,7 @@ jQuery(document).ready(function(){
         el2.type='hidden',el2.name='ik_int',el2.value='json';
         document.getElementById('ikform').appendChild(el2);
         jQuery('.blLoaderIK').css('display', 'block');
-        jQuery.post(selpayIK.req_uri+'?nYg=nYa&nYsk='+ik_nYsk, jQuery('form[name="vm_interkassa_form"]').serialize(), function (data) {
+        jQuery.post(selpayIK.req_uri+'?nYg=nYa', jQuery('form[name="vm_interkassa_form"]').serialize(), function (data) {
           var a = JSON.parse(data)
           console.log(a)
           jQuery('input[name="ik_sign"]').val(a.sign);
@@ -150,7 +150,7 @@ jQuery(document).ready(function(){
     if(jQuery('input[name ="ik_pw_via"]').length>0) jQuery('input[name ="ik_pw_via"]').val(ik_pw_via);
     else jQuery('form[name="vm_interkassa_form"]').append(jQuery('<input>', {type: 'hidden', name: 'ik_pw_via', val: ik_pw_via}));
 
-    jQuery.post(selpayIK.req_uri+'?nYg=nYs&nYsk='+ik_nYsk, jQuery('form[name="vm_interkassa_form"]').serialize())
+    jQuery.post(selpayIK.req_uri+'?nYg=nYs', jQuery('form[name="vm_interkassa_form"]').serialize())
       .always(function (data, status) {
         jQuery('.blLoaderIK').css('display', 'none');
         if(status == 'success'){var a = JSON.parse(data);jQuery('input[name="ik_sign"]').val(a.sign);}
