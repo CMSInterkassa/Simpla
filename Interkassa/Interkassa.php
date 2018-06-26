@@ -9,6 +9,7 @@ class Interkassa extends Simpla
 		$payment_currency = $this->money->get_currency(intval($payment_method->currency_id));
 		$cfg = $this->payment->get_payment_settings($payment_method->id);
 		$uri = $this->config->root_url.'/payment/Interkassa/';
+		$_SESSION['secret_key'] = $cfg['ik_secret_key'];
 
 		$price = round($this->money->convert($order->total_price, $payment_method->currency_id, false), 2);
 
@@ -73,9 +74,6 @@ class Interkassa extends Simpla
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 			<link href="'.$uri.'assets/ik.css" rel="stylesheet" type="text/css" />
 			<script type="text/javascript" src="'.$uri.'assets/ik.js"></script>
-			<script>
-				ik_nYsk="'.$cfg['ik_secret_key'].'";
-			</script>
 		';
 		$html .= '
 			<div class="ik_block">

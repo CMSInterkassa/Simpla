@@ -1,8 +1,9 @@
 <?
 if($_SERVER['REQUEST_METHOD']!='POST') die();
 
-function IkSignFormation($data, $secret_key){
+function IkSignFormation($data){
   if (!empty($data['ik_sign'])) unset($data['ik_sign']);
+  $secret_key = $_SESSION['secret_key'];
 
   $dataSet = array();
   foreach ($data as $key => $value) {
@@ -28,12 +29,12 @@ function getAnswerFromAPI($data){
 }
 switch ($_GET['nYg']) {
   case 'nYs':
-    $tmp = json_encode(array('sign'=>IkSignFormation($_POST,$_GET['nYsk'])));
+    $tmp = json_encode(array('sign'=>IkSignFormation($_POST)));
     #file_put_contents(__DIR__.'/gg.txt',$tmp,FILE_APPEND);
     echo $tmp;
     break;
   case 'nYa':
-    $sign = IkSignFormation($_POST,$_GET['nYsk']);
+    $sign = IkSignFormation($_POST);
     $_POST['ik_sign'] = $sign;
     $tmp = getAnswerFromAPI($_POST);
     echo json_encode($tmp);
