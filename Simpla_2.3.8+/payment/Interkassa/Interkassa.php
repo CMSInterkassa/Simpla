@@ -10,8 +10,8 @@
  * IPN Script for Interkassa
  *
  */
-require_once(dirname(dirname(__DIR__)) . '/api/Newcms.php');
-class Interkassa extends Newcms
+require_once(dirname(dirname(__DIR__)) . '/api/Simpla.php');
+class Interkassa extends Simpla
 {
 	public function checkout_form($order_id, $button_text = null)
 	{
@@ -63,9 +63,16 @@ class Interkassa extends Newcms
 		$host = "https://api.interkassa.com/v1/paysystem-input-payway?checkoutId=" . $ik_co_id;
 		$username = $api_id;
 		$password = $api_key;
+		
+		$businessAcc = $this->getIkBusinessAcc($username, $password);
+		$ikHeaders = [];
+        $ikHeaders[] = "Authorization: Basic " . base64_encode("$username:$password");
+        if (!empty($businessAcc)) {
+                $ikHeaders[] = "Ik-Api-Account-Id: " . $businessAcc;
+        }
 		$ch = curl_init($host);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization:Basic ' . base64_encode("$username:$password")));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $ikHeaders);
 		$response = curl_exec($ch);
 		if(isset($response) && $response) {
 			$returnInter = json_decode($response);
@@ -90,6 +97,45 @@ class Interkassa extends Newcms
 		}
 		return $payment_systems;
 	}
+	
+	 public function getIkBusinessAcc($username = '', $password = '')
+        {
+            $tmpLocationFile = __DIR__ . '/tmpLocalStorageBusinessAcc.ini';
+            $dataBusinessAcc = function_exists('file_get_contents') ? file_get_contents($tmpLocationFile) : '{}';
+            $dataBusinessAcc = json_decode($dataBusinessAcc, 1);
+            $businessAcc = is_string($dataBusinessAcc['businessAcc']) ? trim($dataBusinessAcc['businessAcc']) : '';
+            if (empty($businessAcc) || sha1($username . $password) !== $dataBusinessAcc['hash']) {
+                $curl = curl_init();
+                curl_setopt($curl, CURLOPT_URL, 'https://api.interkassa.com/v1/' . 'account');
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
+                curl_setopt($curl, CURLOPT_HEADER, false);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, ["Authorization: Basic " . base64_encode("$username:$password")]);
+                $response = curl_exec($curl);
+
+                if (!empty($response['data'])) {
+                    foreach ($response['data'] as $id => $data) {
+                        if ($data['tp'] == 'b') {
+                            $businessAcc = $id;
+                            break;
+                        }
+                    }
+                }
+
+                if (function_exists('file_put_contents')) {
+                    $updData = [
+                        'businessAcc' => $businessAcc,
+                        'hash' => sha1($username . $password)
+                    ];
+                    file_put_contents($tmpLocationFile, json_encode($updData, JSON_PRETTY_PRINT));
+                }
+
+                return $businessAcc;
+            }
+
+            return $businessAcc;
+        }
 	private function createSign($data, $secret_key) {
 		if (!empty($data['ik_sign'])) unset($data['ik_sign']);
 

@@ -11,8 +11,8 @@
  *
  */
 
-require_once(dirname(dirname(__DIR__)) . '/api/Newcms.php');
-class InterkassaController extends Newcms
+require_once(dirname(dirname(__DIR__)) . '/api/Simpla.php');
+class InterkassaController extends Simpla
 {
 	protected $data;
 	protected $order;
@@ -65,6 +65,7 @@ class InterkassaController extends Newcms
 
 
 		echo 'success';
+		//echo 'pending';
 	}
 	public function sendSign() {
 		$sign = $this->createSign($this->data,$this->settings['ik_secret_key']);
